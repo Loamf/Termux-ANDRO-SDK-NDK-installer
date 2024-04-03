@@ -149,17 +149,17 @@ dowload_zip () {
 if [[ -f ${PWd}/${A1}.zip ]] && [[ "$(cat x01 | awk '{print $1}')" == "$(sha1sum ${PWd}/${A1}.zip|awk '{print $1}')" ]]; then
 	(sleep 1) &> /dev/null & spin22 "${A1}" " Done " "Downloading"
 else
-(curl --fail --retry 3 --location --output ${PWd}/${A1}.zip "${sdk_link}" --silent) &> /dev/null & progress ${A1};
+(wget --tries=3 --continue --quiet -O ${PWd}/${A1}.zip "${sdk_link}") & progress ${A1};
 fi
 if [[ -f ${PWd}/${A2}.zip ]] && [[ "$(cat x02 | awk '{print $1}')" == "$(sha1sum ${PWd}/${A2}.zip|awk '{print $1}')" ]]; then
 	(sleep 1) &> /dev/null & spin22 "${A2}" " Done " "Downloading"
 else
-(curl --fail --retry 3 --location --output ${PWd}/${A2}.zip "${ndk_link}" --silent) &> /dev/null & progress ${A2};
+(wget --tries=3 --continue --quiet -O ${PWd}/${A2}.zip "${ndk_link}") & progress ${A2};
 fi
 if [[ -f ${PWd}/${A3}.zip ]] && [[ "$(cat x03 | awk '{print $1}')" == "$(sha1sum ${PWd}/${A3}.zip|awk '{print $1}')" ]]; then
 	(sleep 1) &> /dev/null & spin22 "${A3}" " Done " "Downloading"
 else
-(curl --fail --retry 3 --location --output ${PWd}/${A3}.zip "${sdk_tool_link}" --silent) &> /dev/null & progress ${A3}
+(wget --tries=3 --continue --quiet -O ${PWd}/${A3}.zip "${sdk_tool_link}") & progress ${A3}
 fi
 sleep 2
 (sha1sum -c ${PWd}/{x01,x02,x03}) &> /dev/null
