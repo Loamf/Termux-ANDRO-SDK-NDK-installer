@@ -1,9 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/bash
-PWd="${HOME}/ANDRO-SNDK"
+PWd="${PWD}"
 szf="File Size of"
 lb="${TMPDIR}/LB"
 sdkm="${PREFIX}/bin/sdkmanager"
-NTP="/sdcard/Android/data/com.tyron.code/files/templates"
 A1="Android-SDK"
 A2="Android-NDK"
 A3="SDK-Tools"
@@ -99,8 +98,6 @@ if [[ "$?" != 0 ]];then
 fi
 }
 d_size () {
-stl4=$(curl -s -N https://apksos.com/app/com.tyron.code | grep -o "File size: [0-9\.]*M"| awk -F: '/File size:/{sub("\r", "", $2); print $2}')
-(sleep 3) &> /dev/null & spin22 "CodeAssist \e[34mis" ${stl4} "${szf}"
 stl3=$(curl -sIL "${sdk_link}" | awk -F: '/content-length:/{sub("\r", "", $2); print $2}' | numfmt --to iec --format "%8.1f" | tail -1)
 (sleep 3) &> /dev/null & spin22 "${A1}" ${stl3} "${szf}"
 stl2=$(curl -sIL "${ndk_link}" | awk -F: '/content-length:/{sub("\r", "", $2); print $2}' | numfmt --to iec --format "%8.1f" | tail -1)
@@ -110,21 +107,21 @@ stl=$(curl -sIL "${sdk_tool_link}" | awk -F: '/content-length:/{sub("\r", "", $2
 }
 install_package () {
 #echo
-(apt install ncurses-utils coreutils figlet grep unzip curl openjdk-17 gradle -y) &> /dev/null & spin22 "Packages" " Done " "Installing"
+(apt install wget ncurses-utils coreutils figlet grep unzip curl openjdk-17 gradle -y) &> /dev/null & spin22 "Packages" " Done " "Installing"
 }
 dowload_zip () {
 #yes | cp x* ${PWd}
-if [[ -f ${PWd}/${A1}.zip ]] && [[ "$(cat x01 | awk '{print $1}')" == "$(sha1sum ${PWd}/${A1}.zip|awk '{print $1}')" ]]; then
+if [[ -f ${PWd}/${A1}.zip ]] && [[ $(stat --format=%s "${PWd}/${A1}.zip") == ${size_A1} ]]; then
 	(sleep 1) &> /dev/null & spin22 "${A1}" " Done " "Downloading"
 else
 (wget --tries=3 --continue --quiet -O ${PWd}/${A1}.zip "${sdk_link}") & progress ${A1};
 fi
-if [[ -f ${PWd}/${A2}.zip ]] && [[ "$(cat x02 | awk '{print $1}')" == "$(sha1sum ${PWd}/${A2}.zip|awk '{print $1}')" ]]; then
+if [[ -f ${PWd}/${A2}.zip ]] && [[ $(stat --format=%s "${PWd}/${A2}.zip") == ${size_A2} ]]; then
 	(sleep 1) &> /dev/null & spin22 "${A2}" " Done " "Downloading"
 else
 (wget --tries=3 --continue --quiet -O ${PWd}/${A2}.zip "${ndk_link}") & progress ${A2};
 fi
-if [[ -f ${PWd}/${A3}.zip ]] && [[ "$(cat x03 | awk '{print $1}')" == "$(sha1sum ${PWd}/${A3}.zip|awk '{print $1}')" ]]; then
+if [[ -f ${PWd}/${A3}.zip ]] && [[ $(stat --format=%s "${PWd}/${A3}.zip") == ${size_A3} ]]; then
 	(sleep 1) &> /dev/null & spin22 "${A3}" " Done " "Downloading"
 else
 (wget --tries=3 --continue --quiet -O ${PWd}/${A3}.zip "${sdk_tool_link}") & progress ${A3}
