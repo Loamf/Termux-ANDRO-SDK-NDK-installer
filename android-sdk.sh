@@ -90,26 +90,6 @@ NORM
 printf "\e[32m [${2}]\e[0m";
 echo "";
 }
-usage () {
-printf "
-Usage: bash android-sdk.sh [option]
-
-	\033[4moption\033[0m			\033[4mDescription\033[0m
-
-	--pkgs			For install requirements
-	--help or -h		For see instructions
-	--codeassist		For install codeAssist app 
-				from PlayStore.
-	--install-sdk		For setup Android sdk and 
-				ndk on termux.
-	--size			For watch Download file
-				size.
-	--template		set template for
-				termux gradle.
-
-hint: bash android-sdk.sh --codeassist
-"
-}
 check_internet () {
 	(ping -c 3 google.com) &> /dev/null 2>&1
 if [[ "$?" != 0 ]];then
@@ -127,18 +107,6 @@ stl2=$(curl -sIL "${ndk_link}" | awk -F: '/content-length:/{sub("\r", "", $2); p
 (sleep 3) &> /dev/null & spin22 "${A2}" ${stl2} "${szf}"
 stl=$(curl -sIL "${sdk_tool_link}" | awk -F: '/content-length:/{sub("\r", "", $2); print $2}' | numfmt --to iec --format "%8.1f" | tail -1)
 (sleep 3) &> /dev/null & spin22 "${A3} \e[34mis" ${stl} "${szf}"
-}
-codeassist_app () {
-	if [[ ! `command -v am` ]]; then
-		echo -e "\e[1;33mFor install CodeAssist app:\e[0m"
-		echo -e "Copy this link and paste on Chrome Browser"
-		echo
-		echo -e "link: \e[4;32mmarket://details?id=com.tyron.code\e[0m"
-	else
-		echo -e "\e[1;33m[*] \e[1;32mPlz wait 3 second and when pop-ups plz choose Playstore.\e[0m"
-		sleep 6
-		am start -a android.intent.action.VIEW -d "market://details?id=com.tyron.code"
-	fi
 }
 install_package () {
 #echo
@@ -187,67 +155,21 @@ mv ${TMPDIR}/android-ndk* ${PREFIX}/share/android-sdk/ndk/${ndk_ver}) &> /dev/nu
 yes | cp ${TMPDIR}/aarch64*/* -r ${PREFIX}/share/android-sdk/
 ) &> /dev/null & spin22 "${A3}" " Done " "Unzipping"
 }
-termux_template () {
-#echo
-yes | termux-setup-storage &> /dev/null
-yes | cp Termux-Studio/ -r ${NTP}
-}
-if [[ "$1" == "--codeassist" ]]; then
-	check_internet
-if [[ ! `command -v tput` ]]; then
-	echo -e "\e[1;31m[*] \e[1;33mPlease fullfill the requirements:"
-	echo -e ">> \e[4;32mbash android-sdk.sh --pkgs\e[0m"
-	exit 0
-fi
-	logo $(tput cols) "Code Assist";
-	codeassist_app
-fi
-if [[ "$1" == "--install-sdk" ]]; then
+if [[ "$1" == "install" ]]; then
         check_internet
-	if [[ ! `command -v tput` ]]; then
-		echo -e "\e[1;31m[*] \e[1;33mPlease fullfill the requirements:"
-		echo -e ">> \e[4;32mbash android-sdk.sh --pkgs\e[0m"
-		exit 0
-	fi
 	logo $(tput cols) "ANDROSDK";
 	dowload_zip
 	sdk_setup
 fi
-if [[ "$1" =~ ^(--help|-h)$ ]]; then
-        usage
-fi
-if [[ "$1" == "--size" ]]; then
+if [[ "$1" == "size" ]]; then
 	check_internet
-	if [[ ! `command -v tput` ]]; then
-		echo -e "\e[1;31m[*] \e[1;33mPlease fullfill the requirements:"
-		echo -e ">> \e[4;32mbash android-sdk.sh --pkgs\e[0m"
-		exit 0
-	else
 	logo $(tput cols) "ANDROSDK";
         d_size
 	fi
-fi
-if [[ "$1" == "--template" ]]; then
-	if [[ -d "${NTP}" ]]; then
-		termux_template
-		(sleep 3) &> /dev/null & spin22 "CodeAssist" " Done " "Pushing template to"
-		if [[ ! `command -v am` ]]; then
-			echo
-			echo -e "\e[1;33m[*] \e[4;32mOpen codeAssist app and use template now\e[0m"
-		else
-			echo -e "\e[1;33m[*] \e[4;32mOpen codeAssist app and use template now\e[0m"
-			sleep 6
-			am start -n com.tyron.code/com.tyron.code.MainActivity
-		fi
-	else
-		echo -e "\e[1;31[*] \e[1;31m Plz download CodeAssist app or use below command.\e[0m"
-		echo -e "hint: \e[4;32m bash android-sdk.sh --codeassist\e[0m"
-	fi
+fi 
+if [[ "$1" == "help" ]]; then
+        usage
 fi
 if [[ "$1" == "" ]]; then
 	usage
-fi
-if [[ "$1" == "--pkgs" ]]; then
-	check_internet
-	install_package
 fi
