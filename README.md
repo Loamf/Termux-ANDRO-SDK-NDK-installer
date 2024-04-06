@@ -1,12 +1,6 @@
 # ANDRO-SNDK
 Android-SDK and NDK for Termux.
 
-## Requirement packages
-
-`
-apt update && yes | apt upgrade && yes | apt install coreutils figlet
-`
-
 ## Usage options
 ```
 Usage: bash android-sdk.sh [option]
