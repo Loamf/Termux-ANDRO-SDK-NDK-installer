@@ -10,46 +10,8 @@ ndk_ver="24.0.8215888"
 sdk_link="https://github.com/Lzhiyong/termux-ndk/releases/download/android-sdk/android-sdk-aarch64.zip"
 sdk_tool_link="https://github.com/Lzhiyong/android-sdk-tools/releases/download/33.0.3/android-sdk-tools-static-aarch64.zip"
 ndk_link="https://github.com/Lzhiyong/termux-ndk/releases/download/ndk-r24/android-ndk-r24-aarch64.zip"
-logo () {
-var=$(echo $(( ${1} - 2)))
-var2=$(seq -s─ ${var}|tr -d '[:digit:]')
-var3=$(seq -s\  ${var}|tr -d '[:digit:]')
-var4=$(echo $(( ${1} - 20)))
-cat >> ${lb} << EOF
-#!/usr/bin/bash
-PUT(){ echo -en "\033[\${1};\${2}H";}
-DRAW(){ echo -en "\033%";echo -en "\033(0";}
-WRITE(){ echo -en "\033(B";}
-HIDECURSOR(){ echo -en "\033[?25l";}
-NORM(){ echo -en "\033[?12l\033[?25h";}
-HIDECURSOR
-clear
-echo -e "\033[35;1m"
-#tput setaf 5
-echo "┌${var2}┐"
-for ((i=1; i<=8; i++)); do
-echo "│${var3}│"
-done
-echo "└${var2}┘"
-PUT 3 0 && echo -e "\e[32m"
-figlet -c -f smslant -w ${1} "${2}"
-PUT 2 0
-echo -e "\033[35;1m"
-#tput setaf 5
-for ((i=1; i<=8; i++)); do
-echo "│"
-done
-PUT 9 $((${var4} - 20))
-echo -e "\e[32m \e[1;34mInstallation setup \e[32mBy Remo773 \e[33mTBag\e[0m"
-PUT 12 0
-echo
-NORM
-EOF
-bash ${lb}
-rm -rf ${lb}
-}
-progress() {
 
+progress() {
 local pid=$!
 local delay=0.25
 while [ "$(ps a | awk '{print $1}' | grep $pid)" ]; do
@@ -68,7 +30,6 @@ printf "\e[32m [\e[32m Done \e[32m]\e[0m";
 echo "";
 }
 spin22 () {
-HIDECURSOR(){ echo -en "\033[?25l";}
 NORM(){ echo -en "\033[?12l\033[?25h";}
 local pid=$!
 local delay=0.25
@@ -78,7 +39,6 @@ while [ "$(ps a | awk '{print $1}' | grep $pid)" ]; do
 
 for i in "${spinner[@]}"
 do
-HIDECURSOR
         echo -ne "\033[34m\r[*] "${3}" \e[1;33m${1}\e[34m 	: \e[33m[\033[32m$i\033[33m]\033[0m   ";
         sleep $delay
         printf "\b\b\b\b\b\b\b\b";
@@ -89,13 +49,22 @@ NORM
 printf "\e[32m [${2}]\e[0m";
 echo "";
 }
-check_internet () {
-	(ping -c 3 google.com) &> /dev/null 2>&1
-if [[ "$?" != 0 ]];then
-	echo -ne "\033[31m\r[*] \033[4;32mPlease Check Your Internet Connection... \e[0m"; 
-	sleep 1
-	exit 0
-fi
+usage () {
+printf "
+Usage: bash android-sdk.sh [option]
+
+	\033[4moption\033[0m			\033[4mDescription\033[0m
+
+	download		For download Android SDK and 
+				NDK
+	install			For install Android SDK and 
+				NDK
+	size			For watch Download file
+				size.
+	help			For see instructions
+
+hint: bash android-sdk.sh download && bash android-sdk.sh install
+"
 }
 d_size () {
 stl3=$(curl -sIL "${sdk_link}" | awk -F: '/content-length:/{sub("\r", "", $2); print $2}' | numfmt --to iec --format "%8.1f" | tail -1)
@@ -127,10 +96,10 @@ else
 (wget --tries=3 --continue --quiet -O ${PWd}/${A3}.zip "${sdk_tool_link}") & progress ${A3}
 fi
 sleep 2
-(sha1sum -c ${PWd}/{x01,x02,x03}) &> /dev/null
-if [[ ! $? == 0  ]]; then
-	echo -e "\e[31mdownload failed..\e[0m"
-	echo -e "Plz run command : \e[4;32mbash android-sdk.sh --install-sdk\e[0m"
+if [[ $(stat --format=%s "${PWd}/${A1}.zip") == ${size_A1} ]] && [[ $(stat --format=%s "${PWd}/${A2}.zip") == ${size_A2} ]] && [[ $(stat --format=%s "${PWd}/${A3}.zip") == ${size_A3} ]]; then
+	echo -e "\e[31mSuccessful download...\e[0m"
+else
+	echo -e "Download Failed. You need to run command : \e[4;32mbash android-sdk.sh dwonload\e[0m"
 	exit 0
 fi
 }
@@ -152,17 +121,15 @@ mv ${TMPDIR}/android-ndk* ${PREFIX}/share/android-sdk/ndk/${ndk_ver}) &> /dev/nu
 yes | cp ${TMPDIR}/aarch64*/* -r ${PREFIX}/share/android-sdk/
 ) &> /dev/null & spin22 "${A3}" " Done " "Unzipping"
 }
-if [[ "$1" == "install" ]]; then
-        check_internet
-	logo $(tput cols) "ANDROSDK";
+
+if [[ "$1" == "download" ]]; then
 	dowload_zip
+fi
+if [[ "$1" == "install" ]]; then
 	sdk_setup
 fi
 if [[ "$1" == "size" ]]; then
-	check_internet
-	logo $(tput cols) "ANDROSDK";
         d_size
-	fi
 fi 
 if [[ "$1" == "help" ]]; then
         usage
