@@ -3,7 +3,7 @@ Android-SDK and NDK for Termux.
 
 ## Usage options
 ```
-Usage: bash android-sdk.sh [option]
+Usage: bash install.sh [option]
 
 	Option			Description
 
