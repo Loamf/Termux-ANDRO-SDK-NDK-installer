@@ -5,7 +5,7 @@ Android-SDK and NDK for Termux.
 ```
 Usage: bash android-sdk.sh [option]
 
-	\033[4moption\033[0m			\033[4mDescription\033[0m
+	Option			Description
 
 	download		For download Android SDK and 
 				NDK
