@@ -63,7 +63,7 @@ Usage: bash android-sdk.sh [option]
 				size.
 	help			For see instructions
 
-hint: bash android-sdk.sh download && bash android-sdk.sh install
+hint: bash install.sh download && bash install.sh install
 "
 }
 d_size () {
