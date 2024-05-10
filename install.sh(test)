@@ -99,7 +99,9 @@ else
 (wget --tries=3 --continue --quiet -O ${PWd}/${A3}.zip "${sdk_tool_link}") & progress ${A3}
 fi
 sleep 2
-if [[ $(stat --format=%s "${PWd}/${A1}.zip") == ${size_A1} ]] && [[ $(stat --format=%s "${PWd}/${A2}.zip") == ${size_A2} ]] && [[ $(stat --format=%s "${PWd}/${A3}.zip") == ${size_A3} ]]; then
+if [[ $(stat --format=%s "${PWd}/${A1}.zip") == ${size_A1} ]] &&
+   [[ $(stat --format=%s "${PWd}/${A2}.zip") == ${size_A2} ]] &&
+   [[ $(stat --format=%s "${PWd}/${A3}.zip") == ${size_A3} ]]; then
 	echo -e "\e[31mSuccessful download...\e[0m"
 else
 	echo -e "Download Failed. You need to run command : \e[4;32mbash android-sdk.sh dwonload\e[0m"
