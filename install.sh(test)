@@ -126,6 +126,7 @@ yes | cp ${TMPDIR}/aarch64*/* -r ${PREFIX}/share/android-sdk/
 }
 
 if [[ "$1" == "download" ]]; then
+	install_package
 	dowload_zip
 fi
 if [[ "$1" == "install" ]]; then
