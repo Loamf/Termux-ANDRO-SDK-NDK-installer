@@ -135,6 +135,43 @@ mv ${TMPDIR}/android-ndk* ${PREFIX}/share/android-sdk/ndk/${ndk_ver}) &> /dev/nu
 (yes | unzip ${PWd}/${A3}.zip -d ${TMPDIR}/
 yes | cp ${TMPDIR}/aarch64*/* -r ${PREFIX}/share/android-sdk/
 ) &> /dev/null & spin22 "${A3}" " Done " "Unzipping"
+
+if [[ "${CURRENT_SHELL}" == "bash" ]]; then
+  shell_profile="${HOME}/.bashrc"
+elif [[ "${CURRENT_SHELL}" == "zsh" ]]; then
+  shell_profile="${HOME}/.zshrc"
+else
+  unsupported_shell_used=true
+  echo -e "${red}Unsupported shell!${nocol}"
+  echo -e "${green}You will need to manually export env vars JAVA_HOME, ANDROID_SDK_ROOT and ANDROID_HOME on every session to use sdk, or add them to your shell profile manually:${nocol}"
+  echo 'export JAVA_HOME=${PREFIX}/opt/openjdk-17'
+  echo 'export ANDROID_SDK_ROOT=${HOME}/android-sdk'
+  echo 'export ANDROID_HOME=${HOME}/android-sdk'
+  echo -e "${green}Also do the same for sdk and jdk bin locations:${nocol}"
+  echo 'export PATH=${PREFIX}/opt/openjdk/bin:${HOME}/android-sdk/cmdline-tools/latest/bin:${PATH}'
+  fi
+if [[ -z "${unsupported_shell_used}" ]]; then
+  if [[ -z "${JAVA_HOME}" ]]; then
+      echo -e '\nexport JAVA_HOME=${PREFIX}/opt/openjdk\n' >> ${shell_profile}
+      echo -e '\nexport PATH=${PREFIX}/opt/openjdk/bin:${PATH}\n' >> ${shell_profile}
+  else
+      echo "JAVA_HOME is already set to: ${JAVA_HOME}"
+      echo "Check if the path is correct, it should be: ${PREFIX}/opt/openjdk"
+  fi
+  if [[ -z "${ANDROID_SDK_ROOT}" ]]; then
+    echo -e '\nexport ANDROID_SDK_ROOT=${HOME}/android-sdk\n' >> ${shell_profile}
+  else
+      echo "ANDROID_SDK_ROOT is already set to: ${ANDROID_SDK_ROOT}"
+      echo "Check if the path is correct, it should be: ${install_dir}/android-sdk"
+  fi
+  if [[ -z "${ANDROID_HOME}" ]]; then
+      echo -e '\nexport ANDROID_HOME=${HOME}/android-sdk\n' >> ${shell_profile}
+  else
+      echo "ANDROID_HOME is already set to: ${ANDROID_HOME}"
+      echo "Check if the path is correct, it should be: ${install_dir}/android-sdk"
+  fi
+  echo -e '\nexport PATH=${ANDROID_HOME}/cmdline-tools/latest/bin:${ANDROID_HOME}/platform-tools:${PATH}\n' >> ${shell_profile}
+fi
 }
 
 if [[ "$1" == "download" ]]; then
